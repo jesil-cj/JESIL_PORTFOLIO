@@ -44,10 +44,20 @@ export default function DynamicGridCanvas() {
     document.addEventListener('mouseleave', handleMouseLeave);
 
     // Grid spacing
-    const cols = Math.floor(width / 32) + 2;
-    const rows = Math.floor(height / 32) + 2;
+    const cols = Math.floor(width / 36) + 2;
+    const rows = Math.floor(height / 36) + 2;
     const spacingX = width / (cols - 1);
     const spacingY = height / (rows - 1);
+
+    // GitHub Laser Pulses traveling along grid lines
+    const laserPulses = Array.from({ length: 8 }, () => ({
+      horizontal: Math.random() > 0.5,
+      index: Math.floor(Math.random() * (Math.random() > 0.5 ? rows : cols)),
+      pos: Math.random() * 1000,
+      speed: 1.5 + Math.random() * 2.5,
+      length: 120 + Math.random() * 160,
+      color: Math.random() > 0.5 ? 'rgba(99, 102, 241, ' : 'rgba(56, 189, 248, '
+    }));
 
     const render = () => {
       // Smooth lerp mouse tracking
@@ -102,7 +112,7 @@ export default function DynamicGridCanvas() {
             ctx.lineTo(node.x, node.y);
           }
         }
-        ctx.strokeStyle = 'rgba(79, 70, 229, 0.2)'; // Crisp clean grid lines
+        ctx.strokeStyle = 'rgba(79, 70, 229, 0.18)'; // Crisp clean grid lines
         ctx.stroke();
       }
 
@@ -117,8 +127,79 @@ export default function DynamicGridCanvas() {
             ctx.lineTo(node.x, node.y);
           }
         }
-        ctx.strokeStyle = 'rgba(79, 70, 229, 0.2)';
+        ctx.strokeStyle = 'rgba(79, 70, 229, 0.18)';
         ctx.stroke();
+      }
+
+      // Draw GitHub Laser Light Pulses traveling across grid lines
+      laserPulses.forEach((pulse) => {
+        pulse.pos += pulse.speed;
+        const maxDist = pulse.horizontal ? width + pulse.length : height + pulse.length;
+        if (pulse.pos > maxDist) {
+          pulse.pos = -pulse.length;
+          pulse.horizontal = Math.random() > 0.5;
+          pulse.index = Math.floor(Math.random() * (pulse.horizontal ? rows : cols));
+        }
+
+        ctx.save();
+        if (pulse.horizontal && pulse.index < rows) {
+          const r = pulse.index;
+          const headX = pulse.pos;
+          const tailX = pulse.pos - pulse.length;
+          const y = gridNodes[r][0].y;
+
+          const grad = ctx.createLinearGradient(tailX, y, headX, y);
+          grad.addColorStop(0, pulse.color + '0)');
+          grad.addColorStop(0.7, pulse.color + '0.4)');
+          grad.addColorStop(1, pulse.color + '0.9)');
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 2;
+          ctx.shadowColor = 'rgba(99, 102, 241, 0.8)';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.moveTo(tailX, y);
+          ctx.lineTo(headX, y);
+          ctx.stroke();
+        } else if (!pulse.horizontal && pulse.index < cols) {
+          const c = pulse.index;
+          const headY = pulse.pos;
+          const tailY = pulse.pos - pulse.length;
+          const x = gridNodes[0][c].x;
+
+          const grad = ctx.createLinearGradient(x, tailY, x, headY);
+          grad.addColorStop(0, pulse.color + '0)');
+          grad.addColorStop(0.7, pulse.color + '0.4)');
+          grad.addColorStop(1, pulse.color + '0.9)');
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 2;
+          ctx.shadowColor = 'rgba(56, 189, 248, 0.8)';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.moveTo(x, tailY);
+          ctx.lineTo(x, headY);
+          ctx.stroke();
+        }
+        ctx.restore();
+      });
+
+      // Draw Cursor Radial Glow Spotlight (GitHub Copilot style ambient cursor follow)
+      if (mouse.active) {
+        ctx.save();
+        const radGrad = ctx.createRadialGradient(
+          mouse.x, mouse.y, 0,
+          mouse.x, mouse.y, warpRadius
+        );
+        radGrad.addColorStop(0, 'rgba(99, 102, 241, 0.25)');
+        radGrad.addColorStop(0.5, 'rgba(124, 58, 237, 0.08)');
+        radGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.fillStyle = radGrad;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, warpRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -141,3 +222,4 @@ export default function DynamicGridCanvas() {
     />
   );
 }
+

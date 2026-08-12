@@ -14,7 +14,7 @@ export const personalInfo = {
     "Final-year Computer Science student with a passionate focus on UI/UX design, supported by hands-on front-end development experience in React. Skilled in Figma for wireframing, interactive prototyping, and design system creation, with a deep understanding of user-centered design, responsive layouts, and usability heuristics. Combines a product design mindset with backend & systems architecture skills to build beautiful, functional, production-ready interfaces.",
   targetRole: "Seeking UI/UX Design & Product Design Internship Opportunities",
   socials: {
-    github: "https://github.com/jesil-mohamed-cj",
+    github: "https://github.com/jesil-cj",
     linkedin: "https://linkedin.com/in/jesil-mohamed-cj",
     figma: "https://figma.com/@jesil_ux",
   }

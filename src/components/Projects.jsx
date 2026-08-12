@@ -74,10 +74,15 @@ export default function Projects({ activeMode, onSelectProject }) {
             <div
               key={project.id}
               onClick={() => onSelectProject(project)}
-              className="group glass-panel-interactive-light rounded-3xl p-6 flex flex-col justify-between cursor-pointer border border-slate-200 relative overflow-hidden"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+                e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+              }}
+              className="group github-bento-card p-6 flex flex-col justify-between cursor-pointer border border-slate-200 relative overflow-hidden"
             >
-              {/* Top Accent Line */}
-              <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${project.accentColor}`}></div>
 
               <div className="space-y-6">
                 
